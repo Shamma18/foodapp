@@ -44,7 +44,7 @@ if(!errors.isEmpty()){
           if(!userData){
             return res.status(400).json({errors: "try logging with correct credentials"});
           }
-           if(!req.body.password===userData.password){
+           if(req.body.password!==userData.password){
             return res.status(400).json({errors: "try logging with correct credentials"}); 
            }
            return res.json({success:true});

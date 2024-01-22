@@ -1,32 +1,38 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [credentials, setcredentials] = useState({ email: "", password: "" });
+  let navigate =useNavigate()
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(
-      JSON.stringify({
-        email: credentials.email,
-        password: credentials.password,
-      })
-    );
-    const response = await fetch("http://localhost:5001/api/createuser", {
+    const requestBody = {
+      email: credentials.email,
+      password: credentials.password,
+    };
+  
+    const response = await fetch("http://localhost:5001/api/loginuser", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        email: credentials.email,
-        password: credentials.password,
-      }),
+      body: JSON.stringify(requestBody),
     });
-    const json = await response.json();
-    console.log(json);
-    if (!json.success) {
-      alert("enter valid credentials ");
+  
+    const jsonResponse = await response.json();
+  
+    console.log("Response:", jsonResponse);
+  
+    if (jsonResponse.success) {
+      navigate("/");
+    } else {
+      const errorMessage = jsonResponse.error || "An unexpected error occurred.";
+      console.error("Login failed:", errorMessage);
+      alert(errorMessage); // Display a user-friendly error message
     }
   };
+  
+  
   const onChange = (event) => {
     setcredentials({ ...credentials, [event.target.name]: event.target.value });
   };
