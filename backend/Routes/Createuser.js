@@ -2,6 +2,9 @@
  const router=express.Router()
  const User=require('../modules/User')
  const { body, validationResult } = require('express-validator');
+const jwt= require("jsonwebtoken");
+ const bycrypt=require("bcryptjs");
+  const jwtSecret="mynameisYoYohoneysingh##";
 
  router.post("/createuser",[
  body('email').isEmail(),
@@ -14,10 +17,13 @@ if(!errors.isEmpty()){
     return res.status(400).json({errors: errors.array()});
 }
 
+     const salt = await bycrypt.genSalt(10);
+     let secPassword =await bycrypt.hash(req.body.password,salt )
+
       try {
        await  User.create({
              name:req.body.name, 
-             password:req.body.password,
+             password:secPassword,
              email:req.body.email,
              location:req.body.location
         })
@@ -44,10 +50,18 @@ if(!errors.isEmpty()){
           if(!userData){
             return res.status(400).json({errors: "try logging with correct credentials"});
           }
-           if(req.body.password!==userData.password){
+          const pwdCompare=await bycrypt.compare(req.body.password,userData.password)
+           if(!pwdCompare){
             return res.status(400).json({errors: "try logging with correct credentials"}); 
            }
-           return res.json({success:true});
+           const data={
+            user:{
+                id:userData.id
+
+            }
+           }
+           const authToken =jwt.sign(data,jwtSecret)
+           return res.json({success:true,authToken:authToken}) 
          } catch (error) { 
            console.log(error)
            res.json({success:false});

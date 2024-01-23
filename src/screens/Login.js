@@ -24,6 +24,8 @@ export default function Login() {
     console.log("Response:", jsonResponse);
   
     if (jsonResponse.success) {
+      localStorage.setItem("authToken",jsonResponse.authToken);
+      console.log(localStorage.getItem("authToken"));
       navigate("/");
     } else {
       const errorMessage = jsonResponse.error || "An unexpected error occurred.";
