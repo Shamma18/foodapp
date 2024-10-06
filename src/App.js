@@ -1,32 +1,27 @@
-
-import './App.css';
-import Home from './screens/Home';
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route
-} from "react-router-dom";
-import Login from './screens/Login';
-import '../node_modules/bootstrap-dark-5/dist/css/bootstrap-dark.min.css';
-import '../node_modules/bootstrap/dist/js/bootstrap.bundle';
-import '../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js'
-import Signup from './screens/Signup.js';
-import { CartProvider } from './components/ContextReducer.js';
+import Header from "./components/Layout/Header";
+import React,{useState} from 'react';
+import Meals from "./components/Meals/Meals";
+import Cart from "./components/Cart/Cart";
+import CartProvider from "./store/CartProvider";
 
 function App() {
-  return (
-    <CartProvider>
+  const [cartIsShown,setCartIsShown]=useState(false);
+  
+  const showCartHandler=()=>{
+    setCartIsShown(true);
+  };
+  
+  const hideCartHandler=()=>{
+    setCartIsShown(false);
+  };
 
-    <Router>
-       <div >
-        <Routes>
-          <Route exact path="/"element= {<Home/>}/>
-          <Route exact path="/login"element= {<Login/>}/>
-          <Route exact path="/createuser"element= {<Signup/>}/>
-           
-        </Routes>
-       </div>
-       </Router>
+  return (
+    <CartProvider >
+      {cartIsShown && <Cart onClose={hideCartHandler}/>}
+      <Header onShowCart={showCartHandler}/>
+      <main>
+        <Meals />
+      </main>
     </CartProvider>
   );
 }
